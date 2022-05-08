@@ -64,7 +64,9 @@ public class BtAdapter extends ArrayAdapter<ListItem> {
    private View defaultItem(View convertView, int position, ViewGroup parent) {
       ViewHolder viewHolder;
 
-      if (convertView == null) {
+      boolean hasViewHolder = false;
+      if (convertView != null) hasViewHolder = (convertView.getTag() instanceof ViewHolder);
+      if (convertView == null || !hasViewHolder) {
          viewHolder = new ViewHolder();
          convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bt_list_item,
                null, false);
@@ -97,7 +99,9 @@ public class BtAdapter extends ArrayAdapter<ListItem> {
    }
 
    private View titleItem(View convertView, ViewGroup parent) {
-      if (convertView == null) {
+      boolean hasViewHolder = false;
+      if (convertView != null) hasViewHolder = (convertView.getTag() instanceof ViewHolder);
+      if (convertView == null || hasViewHolder) {
          convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bt_list_item_title,
                null, false);
       }

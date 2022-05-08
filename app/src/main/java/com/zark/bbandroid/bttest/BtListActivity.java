@@ -37,6 +37,8 @@ public class BtListActivity extends AppCompatActivity {
    private BluetoothAdapter btAdapter;
    private List<ListItem> list;
    private boolean isBtPermissionGranted = false;
+   private boolean isDiscovery = false;
+   private ActionBar ab;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +53,10 @@ public class BtListActivity extends AppCompatActivity {
       super.onResume();
       IntentFilter f1 = new IntentFilter(BluetoothDevice.ACTION_FOUND);
       IntentFilter f2 = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+      IntentFilter f3 = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
       registerReceiver(bReceiver, f1);
       registerReceiver(bReceiver, f2);
+      registerReceiver(bReceiver, f3);
    }
 
    @Override
@@ -71,21 +75,33 @@ public class BtListActivity extends AppCompatActivity {
    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
       switch (item.getItemId()) {
          case android.R.id.home:
-            finish();
+            if (isDiscovery) {
+               btAdapter.cancelDiscovery();
+               isDiscovery = false;
+               getPairedDevices();
+            } else {
+               finish();
+            }
             break;
          case R.id.id_search:
+            if (isDiscovery) return true;
+            ab.setTitle(R.string.discovering);
+            list.clear();
             ListItem itemTitle = new ListItem();
             itemTitle.setItemType(BtAdapter.TITLE_ITEM_TYPE);
             list.add(itemTitle);
             adapter.notifyDataSetChanged();
             btAdapter.startDiscovery();
+            isDiscovery = true;
             break;
       }
 
-      return super.onOptionsItemSelected(item);
+      return true;
    }
 
    private void init() {
+      ab = getSupportActionBar();
+
       btAdapter = BluetoothAdapter.getDefaultAdapter();
       list = new ArrayList<>();
 
@@ -153,15 +169,15 @@ public class BtListActivity extends AppCompatActivity {
       public void onReceive(Context context, Intent intent) {
          if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
             ListItem item = new ListItem();
             item.setBtDevice(device);
             item.setItemType(BtAdapter.DISCOVERY_ITEM_TYPE);
             list.add(item);
             adapter.notifyDataSetChanged();
-
-//            Toast.makeText(context, "Found device name: " + device.getName(),
-//                  Toast.LENGTH_SHORT).show();
+         } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
+            isDiscovery = false;
+            getPairedDevices();
+            ab.setTitle(R.string.app_name);
          }
       }
    };
