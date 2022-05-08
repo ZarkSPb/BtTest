@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BTTest</string>
+    <string name="title_item_name">Found Devices:</string>
+</resources>
