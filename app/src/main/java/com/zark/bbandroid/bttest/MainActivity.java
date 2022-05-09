@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.zark.bbandroid.bttest.adapter.BtConsts;
+import com.zark.bbandroid.bttest.bluetooth.BtConnection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,8 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
    private MenuItem menuItem;
    private BluetoothAdapter btAdapter;
-
    private SharedPreferences pref;
+
+   private BtConnection btConnection;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +59,13 @@ public class MainActivity extends AppCompatActivity {
             if (btAdapter.isEnabled()) {
                Intent i = new Intent(MainActivity.this, BtListActivity.class);
                startActivity(i);
-            } else{
+            } else {
                Toast.makeText(this, "Switch on Bluetooth to go to this screen", Toast.LENGTH_SHORT).show();
             }
+            break;
+         case R.id.id_connect:
+            btConnection.connect();
+            break;
       }
 
       return super.onOptionsItemSelected(item);
@@ -89,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
    private void init() {
       btAdapter = BluetoothAdapter.getDefaultAdapter();
       pref = getSharedPreferences(BtConsts.MY_PREF, Context.MODE_PRIVATE);
+      btConnection = new BtConnection(this);
 //      Log.d(LOG_TAG, "Bt name: " + pref.getString(BtConsts.MAC_KEY, "no bt selected"));
    }
 
