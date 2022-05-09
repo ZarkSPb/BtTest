@@ -12,7 +12,7 @@ public class BtConnection {
    private SharedPreferences pref;
    private BluetoothAdapter btAdapter;
    private BluetoothDevice device;
-
+   private ConnectThread connectThread;
 
    public BtConnection(Context context) {
       this.context = context;
@@ -25,7 +25,7 @@ public class BtConnection {
       if (!btAdapter.isEnabled() || mac.isEmpty()) return;
       device = btAdapter.getRemoteDevice(mac);
       if (device == null) return;
-
-
+      connectThread = new ConnectThread(context, btAdapter, device);
+      connectThread.start();
    }
 }
