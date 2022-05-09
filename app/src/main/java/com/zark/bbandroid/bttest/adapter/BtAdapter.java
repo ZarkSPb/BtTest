@@ -77,6 +77,7 @@ public class BtAdapter extends ArrayAdapter<ListItem> {
          listViewHolders.add(viewHolder);
       } else {
          viewHolder = (ViewHolder) convertView.getTag();
+         viewHolder.chBtSelected.setChecked(false);
       }
 
       if (mainList.get(position).getItemType().equals(BtAdapter.DISCOVERY_ITEM_TYPE)) {
